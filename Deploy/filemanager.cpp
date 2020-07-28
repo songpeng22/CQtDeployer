@@ -59,6 +59,34 @@ void FileManager::loadDeployemendFiles(const QString &targetDir) {
 #endif
 }
 
+QList<QFileInfo> FileManager::getDirList(const QString &dir,
+                                         const QStringList &nameFilter,
+                                         QDir::Filters filter,
+                                         QDir::SortFlag sortOptions) {
+
+    QDir dirObj(dir);
+    auto result = dirObj.entryInfoList(nameFilter, filter, sortOptions);
+    if (DeployCore::isSnap() && result.isEmpty()) {
+        dirObj.setPath(DeployCore::snapRootFS() + "/" + dir);
+        auto result = dirObj.entryInfoList(nameFilter, filter, sortOptions);
+    }
+
+    return result;
+}
+
+QList<QFileInfo> FileManager::getDirList(const QString &dir,
+                                         QDir::Filters filter,
+                                         QDir::SortFlag sortOptions) {
+
+    QDir dirObj(dir);
+    auto result = dirObj.entryInfoList(filter, sortOptions);
+    if (DeployCore::isSnap() && result.isEmpty()) {
+        dirObj.setPath(DeployCore::snapRootFS() + "/" + dir);
+        auto result = dirObj.entryInfoList(filter, sortOptions);
+    }
+
+    return QDir(dir).entryInfoList(filter, sortOptions);
+}
 
 bool FileManager::addToDeployed(const QString& path) {
     auto info = QFileInfo(path);
@@ -114,8 +142,7 @@ bool FileManager::strip(const QString &dir) const {
     }
 
     if (info.isDir()) {
-        QDir d(dir);
-        auto list = d.entryInfoList(QDir::Files | QDir::Dirs | QDir::NoDotAndDotDot);
+        auto list = getDirList(dir, QDir::Files | QDir::Dirs | QDir::NoDotAndDotDot);
 
         bool res = false;
         for (const auto &i : list) {
@@ -148,7 +175,11 @@ bool FileManager::strip(const QString &dir) const {
 
 bool FileManager::fileActionPrivate(const QString &file, const QString &target,
                                     QStringList *masks, bool isMove, bool targetIsFile) {
-    
+
+    if (DeployCore::isSnap() && !file.contains(DeployCore::snapRootFS())) {
+        return fileActionPrivate(DeployCore::transportPathToSnapRoot(file), target, masks, isMove, targetIsFile);
+    }
+
     auto info = QFileInfo(file);
     
     bool copy = !masks;
@@ -284,9 +315,7 @@ bool FileManager::moveFile(const QString &file, const QString &target, QStringLi
 bool FileManager::copyFolder(const QString &from, const QString &to, const QStringList &filter,
                              QStringList *listOfCopiedItems, QStringList *mask) {
 
-    QDir fromDir(from);
-
-    auto list = fromDir.entryInfoList(QDir::NoDotAndDotDot | QDir::AllEntries);
+    auto list = getDirList(from, QDir::NoDotAndDotDot | QDir::AllEntries);
 
     for (const auto &item : list) {
         if (QFileInfo(item).isDir()) {
@@ -354,8 +383,7 @@ bool FileManager::moveFolder(const QString &from, const QString &to, const QStri
         return true;
     }
 
-    QDir dir(from);
-    auto list = dir.entryInfoList(QDir::Files | QDir::Dirs | QDir::NoDotAndDotDot);
+    auto list = getDirList(from, QDir::Files | QDir::Dirs | QDir::NoDotAndDotDot);
     for (const auto &i :list) {
         auto targetDir = to;
         if (i.isDir()) {

@@ -11,7 +11,7 @@
 #include <QSet>
 #include <QStringList>
 #include <deploy_global.h>
-
+#include <QDir>
 
 
 class DEPLOYSHARED_EXPORT FileManager
@@ -92,6 +92,24 @@ public:
 
     void saveDeploymendFiles(const QString &targetDir);
     void loadDeployemendFiles(const QString &targetDir);
+
+    /**
+     * @brief getDirList this method return list of all elements of dir.
+     * @return
+     */
+    static QList<QFileInfo> getDirList(const QString &dir,
+                                       QDir::Filters filter = QDir::NoFilter,
+                                       QDir::SortFlag sortOptions = QDir::NoSort);
+
+
+    /**
+     * @brief getDirList this method return list of all elements of dir.
+     * @return
+     */
+    static QList<QFileInfo> getDirList(const QString &dir,
+                                       const QStringList& nameFilter,
+                                       QDir::Filters filter,
+                                       QDir::SortFlag sortOptions = QDir::NoSort);
 };
 
 #endif // COPYPASTEMANAGER_H

@@ -154,6 +154,24 @@ public:
 
     DeployCore() = delete;
 
+    /**
+     * @brief isSnap - check this application to see if it is a snap package.
+     * @return true if this app is snap package.
+     */
+    static bool isSnap();
+
+    /**
+     * @brief snapRootFS this method rerurn prefix of the snap root file system path.
+     *  see https://snapcraft.io/docs/the-system-backup-interface
+     * @return path of snap root fs path.
+     */
+    static QString snapRootFS();
+
+    /**
+     * @brief transportPathToSnapRoot this function convert classic path to snap strict.
+     * @return
+     */
+    static QString transportPathToSnapRoot(const QString& path);
 
     static QtModuleEntry qtModuleEntries[];
     static const DeployConfig * _config;
