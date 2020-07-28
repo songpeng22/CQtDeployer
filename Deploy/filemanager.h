@@ -101,6 +101,9 @@ public:
                                        QDir::Filters filter = QDir::NoFilter,
                                        QDir::SortFlag sortOptions = QDir::NoSort);
 
+    static bool exists(const QString &path);
+    static QString absolutePath(const QString &path);
+    static QString absoluteFilePath(const QString &path);
 
     /**
      * @brief getDirList this method return list of all elements of dir.

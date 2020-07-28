@@ -7,6 +7,7 @@
 
 #include "deploycore.h"
 #include "envirement.h"
+#include "filemanager.h"
 #include "pathutils.h"
 #include "quasarapp.h"
 
@@ -112,13 +113,13 @@ QString Envirement::concatEnv() const {
     return result;
 }
 
-QStringList Envirement::recursiveInvairement(QDir &dir, int depch, int depchLimit) {
+QStringList Envirement::recursiveInvairement(const QString &dir, int depch, int depchLimit) {
 
     if (!dir.exists() || (depchLimit >= 0 && depch >= depchLimit)) {
-        return {dir.absolutePath()};
+        return {FileManager::absoluteFilePath(dir)};
     }
 
-    QFileInfoList list = dir.entryInfoList(QDir::Dirs | QDir::NoDotAndDotDot);
+    QFileInfoList list = FileManager::getDirList(dir, QDir::Dirs | QDir::NoDotAndDotDot);
     QStringList res = {};
 
     for (QFileInfo &i : list) {

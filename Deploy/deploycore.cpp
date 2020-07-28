@@ -371,7 +371,7 @@ QString DeployCore::findProcess(const QString &env, const QString& proc) {
     auto list = env.split(DeployCore::getEnvSeparator());
 
     for (const auto& path : list) {
-        auto files = QDir(path).entryInfoList(QDir::NoDotAndDotDot | QDir::Files);
+        auto files = FileManager::getDirList(path, QDir::NoDotAndDotDot | QDir::Files);
 
         for (const auto& bin : files) {
             if (bin.baseName().compare(proc, ONLY_WIN_CASE_INSENSIATIVE) == 0) {

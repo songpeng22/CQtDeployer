@@ -79,8 +79,7 @@ bool iDistribution::unpackDir(const QString &resource,
                               const QStringList &sufixes) const {
 
 
-    QDir res(resource);
-    auto list = res.entryInfoList();
+    auto list = FileManager::getDirList(resource);
 
     for (const auto & item :list) {
 

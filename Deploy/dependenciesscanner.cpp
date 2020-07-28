@@ -12,6 +12,7 @@
 #include <QList>
 #include <QDir>
 #include <QDebug>
+#include "filemanager.h"
 #include "pathutils.h"
 
 DependenciesScanner::DependenciesScanner() {
@@ -99,14 +100,14 @@ bool DependenciesScanner::fillLibInfo(LibInfo &info, const QString &file) const 
 
 void DependenciesScanner::recursiveDep(LibInfo &lib, QSet<LibInfo> &res, QSet<QString>& libStack) {
     QuasarAppUtils::Params::log("get recursive dependencies of " + lib.fullPath(),
-                                       QuasarAppUtils::Info);
+                                QuasarAppUtils::Info);
 
     if (_scanedLibs.contains(lib.fullPath())) {
         auto scanedLib = _scanedLibs.value(lib.fullPath());
 
         if (!scanedLib.isValid()) {
             QuasarAppUtils::Params::log( "no valid lib in scaned libs list!",
-                                               QuasarAppUtils::Error);
+                                         QuasarAppUtils::Error);
             return;
         }
 
@@ -117,7 +118,7 @@ void DependenciesScanner::recursiveDep(LibInfo &lib, QSet<LibInfo> &res, QSet<QS
 
     if (libStack.contains(lib.fullPath())) {
         QuasarAppUtils::Params::log("A recursive dependency was found in library " + lib.fullPath(),
-                                           QuasarAppUtils::Warning);
+                                    QuasarAppUtils::Warning);
         return;
     }
 
@@ -129,7 +130,7 @@ void DependenciesScanner::recursiveDep(LibInfo &lib, QSet<LibInfo> &res, QSet<QS
 
         if (!libs.size()) {
             QuasarAppUtils::Params::log("lib for dependese " + i + " not findet!!",
-                                               QuasarAppUtils::Warning);
+                                        QuasarAppUtils::Warning);
             continue;
         }
 
@@ -182,7 +183,6 @@ void DependenciesScanner::addToWinAPI(const QString &lib, QHash<WinAPI, QSet<QSt
 }
 
 void DependenciesScanner::setEnvironment(const QStringList &env) {
-    QDir dir;
     QHash<WinAPI, QSet<QString>> winAPI;
 
 #ifdef Q_OS_WIN
@@ -191,14 +191,13 @@ void DependenciesScanner::setEnvironment(const QStringList &env) {
 
     for (auto i : env) {
 
-        dir.setPath(i);
         if (!dir.exists()) {
             continue;
         }
 
-        auto list = dir.entryInfoList(QStringList() << "*.dll" << "*.DLL"
-                                      << "*.SO*" << "*.so*",
-                                      QDir::Files | QDir::NoDotAndDotDot | QDir::Hidden);
+        auto list = FileManager::getDirList(i, QStringList() << "*.dll" << "*.DLL"
+                                            << "*.SO*" << "*.so*",
+                                            QDir::Files | QDir::NoDotAndDotDot | QDir::Hidden);
 
         for (auto i : list) {
             addToWinAPI(i.fileName().toUpper(), winAPI);

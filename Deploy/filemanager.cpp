@@ -88,6 +88,18 @@ QList<QFileInfo> FileManager::getDirList(const QString &dir,
     return QDir(dir).entryInfoList(filter, sortOptions);
 }
 
+bool FileManager::exists(const QString& path) {
+    return QFile::exists(DeployCore::transportPathToSnapRoot(path));
+}
+
+QString FileManager::absolutePath(const QString &path) {
+    return QFileInfo(DeployCore::transportPathToSnapRoot(path)).absolutePath();
+}
+
+QString FileManager::absoluteFilePath(const QString &path) {
+    return QFileInfo(DeployCore::transportPathToSnapRoot(path)).absoluteFilePath();
+}
+
 bool FileManager::addToDeployed(const QString& path) {
     auto info = QFileInfo(path);
     if (info.isFile() || !info.exists()) {

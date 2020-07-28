@@ -696,9 +696,9 @@ bool ConfigParser::setBinDir(const QString &dir, bool recursive) {
     QFileInfoList list;
 
     if (recursive) {
-        list = d.entryInfoList(QDir::Files | QDir::Dirs | QDir::NoDotAndDotDot);
+        list = FileManager::getDirList(dir, QDir::Files | QDir::Dirs | QDir::NoDotAndDotDot);
     } else {
-        list = d.entryInfoList(QDir::Files | QDir::NoDotAndDotDot);
+        list = FileManager::getDirList(dir, QDir::Files | QDir::NoDotAndDotDot);
     }
 
     bool result = false;
@@ -1207,15 +1207,14 @@ QStringList ConfigParser::getDirsRecursive(const QString &path, int maxDepch, in
 }
 
 QSet<QString> ConfigParser::getSetDirsRecursive(const QString &path, int maxDepch, int depch) {
-    QDir dir(path);
 
-    QSet<QString> res = {dir.path()};
+    QSet<QString> res = {DeployCore::transportPathToSnapRoot(path)};
 
     if (maxDepch >= 0 && maxDepch <= depch) {
         return res;
     }
 
-    auto list = dir.entryInfoList(QDir::Dirs| QDir::NoDotAndDotDot);
+    auto list = FileManager::getDirList(path, QDir::Dirs| QDir::NoDotAndDotDot);
 
     for (const auto &subDir: list) {
         res.insert(subDir.absoluteFilePath());

@@ -5,6 +5,7 @@
 
 #include <QDateTime>
 #include <QProcess>
+#include <filemanager.h>
 #include <pathutils.h>
 
 QIF::QIF(FileManager *fileManager)
@@ -228,8 +229,7 @@ QStringList QIF::outPutFiles() const {
 }
 
 QString QIF::getStyle(const QString& input) const {
-    QDir resurces(":/Styles/Distributions/Templates/qif/Styles");
-    auto list = resurces.entryInfoList(QDir::Files);
+    auto list = FileManager::getDirList(":/Styles/Distributions/Templates/qif/Styles", QDir::Files);
     for (const auto& style : list) {
         if (input == style.baseName()) {
             return style.absoluteFilePath();

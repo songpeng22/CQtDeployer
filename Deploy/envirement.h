@@ -40,7 +40,7 @@ public:
     int size() const;
     QString concatEnv() const;
 
-    static QStringList recursiveInvairement(QDir &dir, int depch, int depchLimit = -1);
+    static QStringList recursiveInvairement(const QString &dir, int depch, int depchLimit = -1);
     static QStringList recursiveInvairement(const QString &dir, int depch = -1);
 };
 
